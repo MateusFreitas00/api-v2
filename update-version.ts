@@ -2,7 +2,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { execSync } from 'child_process';
 
-const CONFIG_PATH = 'src/common/config/app.config.ts';
+const CONFIG_PATH = 'src/config/app.config.ts';
 
 function generateNewVersion(currentVersion: string): string {
   const today = new Date();
