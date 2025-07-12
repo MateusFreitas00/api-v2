@@ -1,0 +1,210 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// TODO: Create mongo logger
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  phone         String?
+  password      String
+  role          UserRole  @default(USER)
+  is_active     Boolean   @default(true)
+  last_login_ip String?
+  last_login_at DateTime?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+
+  marketplace_users MarketplaceUser[]
+
+  @@index([email])
+  @@index([is_active])
+  @@map("users")
+}
+
+model Marketplace {
+  id          String            @id @default(cuid())
+  name        String
+  status      MarketplaceStatus @default(ACTIVE)
+  description String?
+  parent_id   String?
+  created_at  DateTime          @default(now())
+  updated_at  DateTime          @updatedAt
+
+  parent   Marketplace?        @relation("MarketplaceHierarchy", fields: [parent_id], references: [id])
+  children Marketplace[]       @relation("MarketplaceHierarchy")
+  sellers  MarketplaceSeller[]
+  api_keys ApiKey[]
+  users    MarketplaceUser[]
+
+  @@index([status])
+  @@index([parent_id])
+  @@map("marketplaces")
+}
+
+model MarketplaceUser {
+  id             String              @id @default(cuid())
+  user_id        String
+  marketplace_id String
+  role           MarketplaceUserRole @default(VIEWER)
+  permissions    String[]
+  is_active      Boolean             @default(true)
+  created_at     DateTime            @default(now())
+  updated_at     DateTime            @updatedAt
+
+  user        User        @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  marketplace Marketplace @relation(fields: [marketplace_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, marketplace_id])
+  @@index([marketplace_id])
+  @@index([role])
+  @@map("marketplace_users")
+}
+
+model Seller {
+  id          String @id @default(cuid())
+  description String
+  address     Json
+
+  marketplaces    MarketplaceSeller[]
+  api_keys        ApiKey[]
+  seller_gateways SellerGateway[]
+
+  @@map("sellers")
+}
+
+model MarketplaceSeller {
+  marketplace_id String
+  seller_id      String
+  status         MarketplaceSellerStatus @default(PENDING)
+  settings       Json?
+  created_at     DateTime                @default(now())
+  updated_at     DateTime                @updatedAt
+
+  marketplace Marketplace @relation(fields: [marketplace_id], references: [id], onDelete: Cascade)
+  seller      Seller      @relation(fields: [seller_id], references: [id], onDelete: Cascade)
+
+  @@id([marketplace_id, seller_id])
+  @@index([marketplace_id])
+  @@index([seller_id])
+  @@index([status])
+  @@map("marketplace_sellers")
+}
+
+model ApiKey {
+  id             String        @id @default(cuid())
+  marketplace_id String
+  seller_id      String?
+  key            String        @unique
+  name           String
+  is_active      Boolean       @default(true)
+  permissions    String[]
+  scopes         ApiKeyScope[]
+  expires_at     DateTime?
+  last_used_at   DateTime?
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+
+  marketplace Marketplace @relation(fields: [marketplace_id], references: [id], onDelete: Cascade)
+  seller      Seller?     @relation(fields: [seller_id], references: [id], onDelete: SetNull)
+
+  @@index([marketplace_id])
+  @@index([seller_id])
+  @@index([key])
+  @@index([is_active])
+  @@map("api_keys")
+}
+
+model Gateway {
+  id         String      @id @default(cuid())
+  name       String
+  type       GatewayType
+  is_active  Boolean     @default(true)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+
+  seller_gateways SellerGateway[]
+
+  @@index([type])
+  @@index([is_active])
+  @@map("gateways")
+}
+
+// TODO: set status or flag?
+model SellerGateway {
+  id         String   @id @default(cuid())
+  seller_id  String
+  gateway_id String
+  is_active  Boolean  @default(true)
+  config     Json?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  seller  Seller  @relation(fields: [seller_id], references: [id], onDelete: Cascade)
+  gateway Gateway @relation(fields: [gateway_id], references: [id], onDelete: Cascade)
+
+  @@unique([seller_id, gateway_id])
+  @@index([seller_id])
+  @@index([gateway_id])
+  @@index([is_active])
+  @@map("seller_gateways")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum MarketplaceStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum MarketplaceUserRole {
+  OWNER
+  ADMIN
+  VIEWER
+}
+
+enum SellerStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum MarketplaceSellerStatus {
+  PENDING
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum DocumentType {
+  TAXPAYER_ID
+  EIN
+}
+
+enum ApiKeyScope {
+  CREATE_SELLER
+}
+
+enum PaymentMethod {
+  CREDIT
+  DEBIT
+  PIX
+  BANK_SLIP
+}
+
+enum GatewayType {
+  BANKING
+  ACQUIRER
+}
