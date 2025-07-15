@@ -10,7 +10,7 @@ generator client {
 // TODO: Create mongo logger
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @id @default(uuid())
   email         String    @unique
   name          String
   phone         String?
@@ -30,7 +30,7 @@ model User {
 }
 
 model Marketplace {
-  id          String            @id @default(cuid())
+  id          String            @id @default(uuid())
   name        String
   status      MarketplaceStatus @default(ACTIVE)
   description String?
@@ -50,7 +50,7 @@ model Marketplace {
 }
 
 model MarketplaceUser {
-  id             String              @id @default(cuid())
+  id             String              @id @default(uuid())
   user_id        String
   marketplace_id String
   role           MarketplaceUserRole @default(VIEWER)
@@ -69,7 +69,7 @@ model MarketplaceUser {
 }
 
 model Seller {
-  id          String @id @default(cuid())
+  id          String @id @default(uuid())
   description String
   address     Json
 
@@ -99,7 +99,7 @@ model MarketplaceSeller {
 }
 
 model ApiKey {
-  id             String        @id @default(cuid())
+  id             String        @id @default(uuid())
   marketplace_id String
   seller_id      String?
   key            String        @unique
@@ -123,7 +123,7 @@ model ApiKey {
 }
 
 model Gateway {
-  id         String      @id @default(cuid())
+  id         String      @id @default(uuid())
   name       String
   type       GatewayType
   is_active  Boolean     @default(true)
@@ -139,7 +139,7 @@ model Gateway {
 
 // TODO: set status or flag?
 model SellerGateway {
-  id         String   @id @default(cuid())
+  id         String   @id @default(uuid())
   seller_id  String
   gateway_id String
   is_active  Boolean  @default(true)

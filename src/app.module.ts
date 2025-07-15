@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { validate } from './config/env.validation';
 import { PrismaService } from './common/prisma/prisma.service';
 import { HealthModule } from './modules/health/health.module';
+import { EventsModule } from './modules/events/events.module';
 
 @Module({
   imports: [
@@ -11,6 +12,7 @@ import { HealthModule } from './modules/health/health.module';
       isGlobal: true,
     }),
     HealthModule,
+    EventsModule,
   ],
   controllers: [],
   providers: [PrismaService],

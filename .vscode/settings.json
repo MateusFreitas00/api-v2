@@ -1,8 +1,12 @@
 {
     "cSpell.words": [
         "datasource",
+        "impay",
         "nestjs",
+        "postgres",
         "postgresql",
-        "topbar"
+        "rabbitmq",
+        "topbar",
+        "uuid"
     ]
 }
