@@ -6,7 +6,6 @@ export class EventsConsumer {
   @EventPattern('event_created')
   handleEventCreated(@Payload() data: Record<string, unknown>) {
     console.log('Event received:', data);
-    console.log('Event processed successfully');
 
     return { status: 'processed', data };
   }
