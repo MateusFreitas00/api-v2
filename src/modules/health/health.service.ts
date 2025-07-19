@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { APP_CONFIG } from '../../config/app.config';
-import { HealthStatus } from '../../enums/health-status.enum';
+import { HealthStatus } from '../../enums/health.enum';
 import { Health, HealthDatabase } from '../../interfaces/health.interface';
 
 @Injectable()

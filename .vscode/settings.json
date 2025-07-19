@@ -3,6 +3,8 @@
         "datasource",
         "impay",
         "nestjs",
+        "paytime",
+        "PAYTIME",
         "postgres",
         "postgresql",
         "rabbitmq",

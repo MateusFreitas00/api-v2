@@ -1,4 +1,4 @@
-import { HealthStatus } from '../enums/health-status.enum';
+import { HealthStatus } from '../enums/health.enum';
 
 export interface Health {
   status: HealthStatus;
